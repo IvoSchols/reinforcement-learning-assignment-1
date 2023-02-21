@@ -23,7 +23,8 @@ class QValueIterationAgent:
     def select_action(self,s): # Down
         ''' Returns the greedy best action in state s '''
         actions = self.Q_sa[s]
-        a = np.argmax(actions)
+        #a = np.argmax(actions)
+        a = argmax(actions)
         return a
         
     def update(self,s,a,p_sas,r_sas): # Up
@@ -53,23 +54,22 @@ def Q_value_iteration(env, gamma=1.0, threshold=0.001):
                 # Keep max error: max_error or |Q_sa-Q_sa_prime|
                 max_error = max(max_error,abs(x-QIagent.Q_sa[state,action]))
 
-                # Plot current Q-value estimates & print max error
-                #env.render(Q_sa=QIagent.Q_sa,plot_optimal_policy=False,step_pause=0.01)
-                print("Q-value iteration, iteration {}, max error {}".format(i,max_error))
+        # Plot current Q-value estimates & print max error
+        env.render(Q_sa=QIagent.Q_sa,plot_optimal_policy=True,step_pause=0.01)
+        print("Q-value iteration, iteration {}, max error {}".format(QIagent.i,max_error))
         if max_error < threshold:
             return QIagent
 
 
 
 def experiment():
-    #gamma = 1.0 -- Original
-    gamma = 0.65
+    gamma = 1.0
     threshold = 0.001
     env = StochasticWindyGridworld(initialize_model=True)
     env.render()
     QIagent = Q_value_iteration(env,gamma,threshold)
     
-    mean_reward_per_timestep = 0
+    sum_reward_per_timestep = 0
 
     # View optimal policy
     done = False
@@ -77,11 +77,12 @@ def experiment():
     while not done:
         a = QIagent.select_action(s)
         s_next, r, done = env.step(a)
-        env.render(Q_sa=QIagent.Q_sa,plot_optimal_policy=False,step_pause=0.5)
+        sum_reward_per_timestep += r
+        env.render(Q_sa=QIagent.Q_sa,plot_optimal_policy=True,step_pause=0.5)
         s = s_next
 
-    # TO DO: Compute mean reward per timestep under the optimal policy
-    # print("Mean reward per timestep under optimal policy: {}".format(mean_reward_per_timestep))
+    mean_reward_per_timestep = sum_reward_per_timestep/QIagent.i
+    print("Mean reward per timestep under optimal policy: {}".format(mean_reward_per_timestep))
 
 if __name__ == '__main__':
     experiment()
