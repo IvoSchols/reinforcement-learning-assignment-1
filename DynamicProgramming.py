@@ -23,7 +23,6 @@ class QValueIterationAgent:
     def select_action(self,s): # Down
         ''' Returns the greedy best action in state s '''
         actions = self.Q_sa[s]
-        #a = np.argmax(actions)
         a = argmax(actions)
         return a
         
@@ -35,8 +34,6 @@ class QValueIterationAgent:
 
             
         self.Q_sa[s][a] = Q_sa_new
-        return Q_sa_new
-
     
     
 def Q_value_iteration(env, gamma=1.0, threshold=0.001):
@@ -51,7 +48,7 @@ def Q_value_iteration(env, gamma=1.0, threshold=0.001):
                 # Q_sa
                 x = QIagent.Q_sa[state,action]
                 # Q_sa_prime
-                QIagent.Q_sa[state,action] = QIagent.update(state,action,env.p_sas,env.r_sas)
+                QIagent.update(state,action,env.p_sas,env.r_sas)
                 # Keep max error: max_error or |Q_sa-Q_sa_prime|
                 max_error = max(max_error,abs(x-QIagent.Q_sa[state,action]))
 
