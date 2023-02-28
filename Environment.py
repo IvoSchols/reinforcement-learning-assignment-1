@@ -113,7 +113,7 @@ class StochasticWindyGridworld:
         self.agent_circle.center = self.agent_location+0.5
             
         # Draw figure
-        plt.pause(step_pause)    
+        plt.pause(step_pause)
 
     def _state_to_location(self,state):
         ''' bring a state index to an (x,y) location of the agent '''

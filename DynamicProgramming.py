@@ -32,6 +32,7 @@ class QValueIterationAgent:
         Q_sa_new = 0
         for state in range(self.n_states):
             Q_sa_new += p_sas[s,a,state] * (r_sas[s,a,state]+self.gamma*self.Q_sa[state, self.select_action(state)])
+
             
         self.Q_sa[s][a] = Q_sa_new
         return Q_sa_new
@@ -40,7 +41,7 @@ class QValueIterationAgent:
     
 def Q_value_iteration(env, gamma=1.0, threshold=0.001):
     ''' Runs Q-value iteration. Returns a converged QValueIterationAgent object '''
-    QIagent = QValueIterationAgent(env.n_states, env.n_actions, gamma)    
+    QIagent = QValueIterationAgent(env.n_states, env.n_actions, gamma)
     QIagent.i = 0
     while True:
         max_error = 0
@@ -55,7 +56,7 @@ def Q_value_iteration(env, gamma=1.0, threshold=0.001):
                 max_error = max(max_error,abs(x-QIagent.Q_sa[state,action]))
 
         # Plot current Q-value estimates & print max error
-        env.render(Q_sa=QIagent.Q_sa,plot_optimal_policy=True,step_pause=0.01)
+        #env.render(Q_sa=QIagent.Q_sa,plot_optimal_policy=True,step_pause=0.05)
         print("Q-value iteration, iteration {}, max error {}".format(QIagent.i,max_error))
         if max_error < threshold:
             return QIagent
@@ -70,6 +71,7 @@ def experiment():
     QIagent = Q_value_iteration(env,gamma,threshold)
     
     sum_reward_per_timestep = 0
+    i = 0
 
     # View optimal policy
     done = False
@@ -80,8 +82,10 @@ def experiment():
         sum_reward_per_timestep += r
         env.render(Q_sa=QIagent.Q_sa,plot_optimal_policy=True,step_pause=0.5)
         s = s_next
+        i += 1
 
-    mean_reward_per_timestep = sum_reward_per_timestep/QIagent.i
+    #mean_reward_per_timestep = sum_reward_per_timestep/QIagent.i
+    mean_reward_per_timestep = sum_reward_per_timestep/i
     print("Mean reward per timestep under optimal policy: {}".format(mean_reward_per_timestep))
 
 if __name__ == '__main__':
