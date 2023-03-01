@@ -71,17 +71,16 @@ def q_learning(n_timesteps, learning_rate, gamma, policy='egreedy', epsilon=None
 
         if done:
             s = env.reset()
-            print('done')
         else:
             s = s_next
-        if plot and i % 200 == 0:
+        if plot:
             env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1) # Plot the Q-value estimates during Q-learning execution
 
     return rewards 
 
 def test():
     
-    n_timesteps = 10000
+    n_timesteps = 2500
     gamma = 1.0
     learning_rate = 0.1
 
