@@ -44,7 +44,7 @@ def experiment():
     ####### Settings
     # Experiment    
     n_repetitions = 50
-    smoothing_window = 2501
+    smoothing_window = 3001
     plot = False # Plotting is very slow, switch it off when we run repetitions
     
     # MDP    
