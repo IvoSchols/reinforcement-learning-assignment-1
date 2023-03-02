@@ -25,17 +25,25 @@ class MonteCarloAgent:
         if policy == 'egreedy':
             if epsilon is None:
                 raise KeyError("Provide an epsilon")
-                
-            # TO DO: Add own code
-            a = np.random.randint(0,self.n_actions) # Replace this with correct action selection
+
+            actions = self.Q_sa[s]
+            probability = np.random.sample()
+
+            if probability < epsilon:           # Exploration
+                a = np.random.randint(0, self.n_actions)
+            else:
+                a = argmax(actions)             # Exploitation
+            
             
                 
         elif policy == 'softmax':
             if temp is None:
                 raise KeyError("Provide a temperature")
-                
-            # TO DO: Add own code
-            a = np.random.randint(0,self.n_actions) # Replace this with correct action selection
+
+            actions = self.Q_sa[s]
+
+            a = np.random.choice(self.n_actions, p=softmax(actions, temp))
+            
             
         return a
         
@@ -45,7 +53,14 @@ class MonteCarloAgent:
         rewards is a list of rewards observed in the episode, of length T_ep
         done indicates whether the final s in states is was a terminal state '''
         # TO DO: Add own code
-        pass
+        T = len(states)-1
+        backup_estimates = [0]
+        for t in range(T):
+            i = T-t # Reverse iterator
+            backup_estimate = rewards[i] + self.gamma * backup_estimates[t] # Backup_estimates is chronological (confusing..)
+            backup_estimates.append(backup_estimate)
+            self.Q_sa[states[i]][actions[i]] += self.learning_rate * (backup_estimate - self.Q_sa[states[i]][actions[i]])
+
 
 def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma, 
                    policy='egreedy', epsilon=None, temp=None, plot=True):
@@ -54,14 +69,33 @@ def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma,
     
     env = StochasticWindyGridworld(initialize_model=False)
     pi = MonteCarloAgent(env.n_states, env.n_actions, learning_rate, gamma)
-    rewards = []
+    all_rewards = []
 
-    # TO DO: Write your Monte Carlo RL algorithm here!
-    
-    # if plot:
-    #    env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1) # Plot the Q-value estimates during Monte Carlo RL execution
+    for i in range(n_timesteps):
+        s = env.reset()
 
-    return rewards 
+        states = []
+        actions = []
+        rewards = []
+
+        for t in range(max_episode_length-1):
+            a = pi.select_action(s, policy, epsilon, temp)
+            s_next, r, done = env.step(a)
+
+            actions.append(a)
+            states.append(s_next)
+            rewards.append(r)
+            all_rewards.append(r)
+
+            if done:
+                break
+        
+        pi.update(states, actions, rewards)
+
+        if plot and i % 200 == 0:
+           env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1) # Plot the Q-value estimates during Monte Carlo RL execution
+
+    return all_rewards 
     
 def test():
     n_timesteps = 10000

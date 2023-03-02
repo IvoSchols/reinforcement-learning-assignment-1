@@ -88,18 +88,18 @@ def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma,
         rewards = []
         
         # Collect episode
-        t = 0
         for t in range(max_episode_length-1):
             a = pi.select_action(s, policy, epsilon, temp)
             s_next,r,done = env.step(a)
-            states.append(s_next)
+
             actions.append(a)
+            states.append(s_next)
             rewards.append(r)
             all_rewards.append(r)
+            
             if done:
                 break
         
-        T = t + 1
         pi.update(states, actions, rewards, done)
 
             
