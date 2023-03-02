@@ -73,7 +73,6 @@ def sarsa(n_timesteps, learning_rate, gamma, policy='egreedy', epsilon=None, tem
         if done:
             s = env.reset()
             a = pi.select_action(s, policy, epsilon, temp)
-            print('done')
         else:
             s = s_next
             a = a_next

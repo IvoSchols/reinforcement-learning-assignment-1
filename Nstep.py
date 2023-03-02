@@ -26,17 +26,25 @@ class NstepQLearningAgent:
         if policy == 'egreedy':
             if epsilon is None:
                 raise KeyError("Provide an epsilon")
-                
-            # TO DO: Add own code
-            a = np.random.randint(0,self.n_actions) # Replace this with correct action selection
+
+            actions = self.Q_sa[s]
+            probability = np.random.sample()
+
+            if probability < epsilon:           # Exploration
+                a = np.random.randint(0, self.n_actions)
+            else:
+                a = argmax(actions)             # Exploitation
+            
             
                 
         elif policy == 'softmax':
             if temp is None:
                 raise KeyError("Provide a temperature")
-                
-            # TO DO: Add own code
-            a = np.random.randint(0,self.n_actions) # Replace this with correct action selection
+
+            actions = self.Q_sa[s]
+
+            a = np.random.choice(self.n_actions, p=softmax(actions, temp))
+            
             
         return a
         
@@ -45,8 +53,22 @@ class NstepQLearningAgent:
         actions is a list of actions observed in the episode, of length T_ep
         rewards is a list of rewards observed in the episode, of length T_ep
         done indicates whether the final s in states is was a terminal state '''
-        # TO DO: Add own code
-        pass
+
+        # Compute n-step targets and upate
+        T = len(states)-1
+        for t in range(T):
+            m = min(self.n, T-t)
+
+            backup_estimate = 0
+            # If s+m is terminal
+            if t+m == len(rewards):
+                for i in range(m-1):
+                    backup_estimate += pow(self.gamma,i)*rewards[i]
+            else:
+                for i in range(m-1):
+                    backup_estimate += pow(self.gamma,i)*rewards[i]+pow(self.gamma,m)*max(self.Q_sa[states[m]])
+            self.Q_sa[states[t],actions[t]] += self.learning_rate * backup_estimate
+            
 
 def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma, 
                    policy='egreedy', epsilon=None, temp=None, plot=True, n=5):
@@ -55,14 +77,37 @@ def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma,
     
     env = StochasticWindyGridworld(initialize_model=False)
     pi = NstepQLearningAgent(env.n_states, env.n_actions, learning_rate, gamma, n)
-    rewards = []
+
+    all_rewards = []
 
     # TO DO: Write your n-step Q-learning algorithm here!
-    
-    # if plot:
-    #    env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1) # Plot the Q-value estimates during n-step Q-learning execution
+    for i in range(n_timesteps):
+        s = env.reset()
+        states = [s]
+        actions = []
+        rewards = []
+        
+        # Collect episode
+        t = 0
+        for t in range(max_episode_length-1):
+            a = pi.select_action(s, policy, epsilon, temp)
+            s_next,r,done = env.step(a)
+            states.append(s_next)
+            actions.append(a)
+            rewards.append(r)
+            all_rewards.append(r)
+            if done:
+                break
+        
+        T = t + 1
+        pi.update(states, actions, rewards, done)
 
-    return rewards 
+            
+        
+        if plot and i % 200 == 0:
+            env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1) # Plot the Q-value estimates during n-step Q-learning execution
+
+    return all_rewards 
 
 def test():
     n_timesteps = 10000

@@ -44,7 +44,7 @@ def experiment():
     ####### Settings
     # Experiment    
     n_repetitions = 50
-    smoothing_window = 3001
+    smoothing_window = 5001
     plot = False # Plotting is very slow, switch it off when we run repetitions
     
     # MDP    
@@ -75,37 +75,37 @@ def experiment():
     optimal_average_reward_per_timestep = 1.2777777777777777 # set the optimal average reward per timestep you found in the DP assignment here
     
     #### Assignment 2: Effect of exploration
-    policy = 'egreedy'
-    epsilons = [0.02,0.1,0.3]
-    learning_rate = 0.25
-    backup = 'q'
-    Plot = LearningCurvePlot(title = 'Exploration: $\epsilon$-greedy versus softmax exploration')    
-    for epsilon in epsilons:        
-        learning_curve = average_over_repetitions(backup, n_repetitions, n_timesteps, max_episode_length, learning_rate, 
-                                              gamma, policy, epsilon, temp, smoothing_window, plot, n)
-        Plot.add_curve(learning_curve,label=r'$\epsilon$-greedy, $\epsilon $ = {}'.format(epsilon))    
-    policy = 'softmax'
-    temps = [0.01,0.1,1.0]
-    for temp in temps:
-        learning_curve = average_over_repetitions(backup, n_repetitions, n_timesteps, max_episode_length, learning_rate, 
-                                              gamma, policy, epsilon, temp, smoothing_window, plot, n)
-        Plot.add_curve(learning_curve,label=r'softmax, $ \tau $ = {}'.format(temp))
-    Plot.add_hline(optimal_average_reward_per_timestep, label="DP optimum")
-    Plot.save('exploration.png')
+    # policy = 'egreedy'
+    # epsilons = [0.02,0.1,0.3]
+    # learning_rate = 0.25
+    # backup = 'q'
+    # Plot = LearningCurvePlot(title = 'Exploration: $\epsilon$-greedy versus softmax exploration')    
+    # for epsilon in epsilons:        
+    #     learning_curve = average_over_repetitions(backup, n_repetitions, n_timesteps, max_episode_length, learning_rate, 
+    #                                           gamma, policy, epsilon, temp, smoothing_window, plot, n)
+    #     Plot.add_curve(learning_curve,label=r'$\epsilon$-greedy, $\epsilon $ = {}'.format(epsilon))    
+    # policy = 'softmax'
+    # temps = [0.01,0.1,1.0]
+    # for temp in temps:
+    #     learning_curve = average_over_repetitions(backup, n_repetitions, n_timesteps, max_episode_length, learning_rate, 
+    #                                           gamma, policy, epsilon, temp, smoothing_window, plot, n)
+    #     Plot.add_curve(learning_curve,label=r'softmax, $ \tau $ = {}'.format(temp))
+    # Plot.add_hline(optimal_average_reward_per_timestep, label="DP optimum")
+    # Plot.save('exploration.png')
     
     ###### Assignment 3: Q-learning versus SARSA
-    # policy = 'egreedy'
-    # epsilon = 0.1 # set epsilon back to original value 
-    # learning_rates = [0.02,0.1,0.4]
-    # backups = ['q','sarsa']
-    # Plot = LearningCurvePlot(title = 'Back-up: on-policy versus off-policy')    
-    # for backup in backups:
-    #     for learning_rate in learning_rates:
-    #         learning_curve = average_over_repetitions(backup, n_repetitions, n_timesteps, max_episode_length, learning_rate, 
-    #                                               gamma, policy, epsilon, temp, smoothing_window, plot, n)
-    #         Plot.add_curve(learning_curve,label=r'{}, $\alpha$ = {} '.format(backup_labels[backup],learning_rate))
-    # Plot.add_hline(optimal_average_reward_per_timestep, label="DP optimum")
-    # Plot.save('on_off_policy.png')
+    policy = 'egreedy'
+    epsilon = 0.1 # set epsilon back to original value 
+    learning_rates = [0.02,0.1,0.4]
+    backups = ['q','sarsa']
+    Plot = LearningCurvePlot(title = 'Back-up: on-policy versus off-policy')    
+    for backup in backups:
+        for learning_rate in learning_rates:
+            learning_curve = average_over_repetitions(backup, n_repetitions, n_timesteps, max_episode_length, learning_rate, 
+                                                  gamma, policy, epsilon, temp, smoothing_window, plot, n)
+            Plot.add_curve(learning_curve,label=r'{}, $\alpha$ = {} '.format(backup_labels[backup],learning_rate))
+    Plot.add_hline(optimal_average_reward_per_timestep, label="DP optimum")
+    Plot.save('on_off_policy.png')
     
     # ##### Assignment 4: Back-up depth
     # policy = 'egreedy'
