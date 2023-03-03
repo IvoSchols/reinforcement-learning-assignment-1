@@ -43,7 +43,7 @@ def average_over_repetitions(backup, n_repetitions, n_timesteps, max_episode_len
 def experiment():
     ####### Settings
     # Experiment    
-    n_repetitions = 50
+    n_repetitions = 10 #TODO: reset to default 50
     smoothing_window = 6001
     plot = False # Plotting is very slow, switch it off when we run repetitions
     

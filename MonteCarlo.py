@@ -69,9 +69,11 @@ def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma,
     
     env = StochasticWindyGridworld(initialize_model=False)
     pi = MonteCarloAgent(env.n_states, env.n_actions, learning_rate, gamma)
+
     all_rewards = []
 
-    for i in range(n_timesteps):
+    i = 0
+    while i < n_timesteps:
         s = env.reset()
 
         states = []
@@ -79,21 +81,25 @@ def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma,
         rewards = []
 
         for t in range(max_episode_length-1):
+            i += 1
             a = pi.select_action(s, policy, epsilon, temp)
             s_next, r, done = env.step(a)
 
-            actions.append(a)
             states.append(s_next)
+            actions.append(a)
             rewards.append(r)
             all_rewards.append(r)
 
-            if done:
+            if done or i >= n_timesteps:
                 break
+
         
+
         pi.update(states, actions, rewards)
 
         if plot and i % 200 == 0:
-           env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1) # Plot the Q-value estimates during Monte Carlo RL execution
+            print('timestep:{}', i)
+            env.render(Q_sa=pi.Q_sa,plot_optimal_policy=True,step_pause=0.1) # Plot the Q-value estimates during Monte Carlo RL execution
 
     return all_rewards 
     
