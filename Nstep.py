@@ -81,7 +81,6 @@ def n_step_Q(n_timesteps, max_episode_length, learning_rate, gamma,
     
     all_rewards = []
 
-    # TO DO: Write your n-step Q-learning algorithm here!
     i = 0
     while i < n_timesteps:
         s = env.reset()

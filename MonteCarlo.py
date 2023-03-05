@@ -53,13 +53,13 @@ class MonteCarloAgent:
         rewards is a list of rewards observed in the episode, of length T_ep
         done indicates whether the final s in states is was a terminal state '''
         # TO DO: Add own code
-        T = len(states)-1
-        backup_estimates = [0]
+        T = len(actions)
+        backup_estimate_old = 0
         for t in range(T):
-            i = T-t # Reverse iterator
-            backup_estimate = rewards[i] + self.gamma * backup_estimates[t] # Backup_estimates is chronological (confusing..)
-            backup_estimates.append(backup_estimate)
+            i = T-t-1 # Reverse iterator
+            backup_estimate = rewards[i] + self.gamma * backup_estimate_old # Backup_estimates is chronological (confusing..)
             self.Q_sa[states[i]][actions[i]] += self.learning_rate * (backup_estimate - self.Q_sa[states[i]][actions[i]])
+            backup_estimate_old = backup_estimate
 
 
 def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma, 
@@ -76,25 +76,24 @@ def monte_carlo(n_timesteps, max_episode_length, learning_rate, gamma,
     while i < n_timesteps:
         s = env.reset()
 
-        states = []
+        states = [s]
         actions = []
         rewards = []
 
         for t in range(max_episode_length-1):
-            i += 1
             a = pi.select_action(s, policy, epsilon, temp)
             s_next, r, done = env.step(a)
 
             states.append(s_next)
             actions.append(a)
             rewards.append(r)
-            all_rewards.append(r)
 
+            s = s_next
+            i += 1
             if done or i >= n_timesteps:
                 break
 
-        
-
+        all_rewards += rewards
         pi.update(states, actions, rewards)
 
         if plot and i % 200 == 0:
